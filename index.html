@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Printing POS v3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+
+<body class="bg-gray-100 p-4">
+<div class="max-w-md mx-auto bg-white p-4 rounded shadow">
+
+<h1 class="text-xl font-bold text-center mb-3">🖨️ Printing POS v3</h1>
+
+<label>Service</label>
+<select id="service" class="w-full border p-2 mb-2">
+  <option>Document Print</option>
+  <option>Photo Print</option>
+</select>
+
+<label>Qty</label>
+<input id="qty" type="number" value="1" class="w-full border p-2 mb-2">
+
+<label>Unit Price</label>
+<input id="price" type="number" value="5" class="w-full border p-2 mb-2">
+
+<button onclick="compute()" class="w-full bg-green-600 text-white py-2 rounded">
+Compute
+</button>
+
+<p class="text-center font-bold mt-2">
+Total ₱<span id="total">0.00</span>
+</p>
+
+<select id="payment" class="w-full border p-2 mt-3">
+<option>Cash</option>
+<option>GCash</option>
+</select>
+
+<button onclick="confirmSale()" class="w-full bg-blue-600 text-white py-2 rounded mt-2">
+Confirm & Save
+</button>
+
+<button onclick="printPDF()" class="w-full bg-gray-700 text-white py-2 rounded mt-2">
+Print Daily PDF
+</button>
+
+</div>
+
+<script>
+const SHEET_URL = "https://script.google.com/macros/s/AKfycbwBV35IkUrJC0NvRjgxbsoUAFdr5rcikvz6f6fcRivqJnNIP05dsWIyJ67YVvG2Dpvw/exec"
+let order={}
+
+function compute(){
+  order={
+    orderNo:"ORD-"+Date.now(),
+    service:service.value,
+    qty:+qty.value,
+    subtotal:+qty.value * +price.value,
+    discount:0
+  }
+  total.textContent = order.subtotal.toFixed(2)
+}
+
+function confirmSale(){
+  order.total = order.subtotal
+  order.payment = payment.value
+
+  fetch(SHEET_URL,{
+    method:"POST",
+    body:JSON.stringify({...order,type:"sale"})
+  })
+
+  alert("Sale saved!")
+}
+
+function printPDF(){
+  const {jsPDF}=window.jspdf
+  const pdf=new jsPDF()
+  pdf.text("Daily Sales Report",10,10)
+  pdf.save("daily-sales.pdf")
+}
+</script>
+</body>
+</html>

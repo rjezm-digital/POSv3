@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>Online Print Order</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 p-4">
+<div class="max-w-md mx-auto bg-white p-4 rounded shadow">
+
+<h1 class="text-xl font-bold mb-3">📤 Online Print Order</h1>
+
+<input id="name" placeholder="Customer Name" class="w-full border p-2 mb-2">
+<select id="service" class="w-full border p-2 mb-2">
+<option>Document Print</option>
+<option>Photo Print</option>
+</select>
+<input id="qty" type="number" placeholder="Qty" class="w-full border p-2 mb-2">
+<input id="file" type="file" class="w-full mb-3">
+
+<button onclick="submitOrder()" class="w-full bg-blue-600 text-white py-2 rounded">
+Submit Order
+</button>
+
+</div>
+
+<script>
+const SHEET_URL="PASTE_YOUR_WEB_APP_URL_HERE"
+
+function submitOrder(){
+  fetch(SHEET_URL,{
+    method:"POST",
+    body:JSON.stringify({
+      type:"order",
+      name:name.value,
+      service:service.value,
+      qty:qty.value,
+      file:"Uploaded"
+    })
+  })
+  alert("Order sent!")
+}
+</script>
+</body>
+</html>
