@@ -44,8 +44,6 @@ Total ₱<span id="total">0.00</span>
   <img src="gcash.png" class="mx-auto w-40 border rounded">
 </div>
 
-<img id="gcashQR" src="gcash.png" class="hidden w-40 mx-auto my-3">
-
 <button onclick="confirmSale()" class="w-full bg-blue-600 text-white py-2 rounded mt-2">
 Confirm & Save
 </button>
@@ -71,20 +69,37 @@ function compute(){
   total.textContent = order.subtotal.toFixed(2)
 }
 
-payment.addEventListener("change",()=>{
-  document.getElementById("gcashQR").classList.toggle(
-    "hidden", payment.value !== "GCash"
-  );
+const paymentSelect = document.getElementById("payment");
+const gcashBox = document.getElementById("gcashBox");
+
+paymentSelect.addEventListener("change", () => {
+  if (paymentSelect.value === "GCash") {
+    gcashBox.classList.remove("hidden");
+  } else {
+    gcashBox.classList.add("hidden");
+  }
 });
 
 function confirmSale(){
   order.total = order.subtotal
   order.payment = payment.value
 
-  fetch(SHEET_URL,{
-    method:"POST",
-    body:JSON.stringify({...order,type:"sale"})
+fetch(SHEET_URL, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    type: "sale",
+    orderNo: order.orderNo,
+    service: order.service,
+    qty: order.qty,
+    subtotal: order.subtotal,
+    discount: order.discount || 0,
+    total: order.total,
+    payment: order.payment
   })
+});
 
   alert("Sale saved!")
 }
@@ -97,4 +112,4 @@ function printPDF(){
 }
 </script>
 </body>
-</html>
+</html> 
